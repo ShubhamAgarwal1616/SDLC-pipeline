@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: offer-code-publisher
+spec:
+  schedule: "0 8 * * 1-5"
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 7
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # number of retries before throwing error
+      template:
+        spec:
+          containers:
+            - name: job
+              image: eu.gcr.io/jl-container-images/entitlements/offer-code-publisher:latest
+              imagePullPolicy: Always
+              resources:
+                limits:
+                  memory: 1Gi
+                requests:
+                  memory: 512Mi
+              securityContext:
+                runAsUser: 65534
+              envFrom:
+                - configMapRef:
+                    name: offer-code-publisher
+              env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: "/etc/secrets/credentials.json"
+              volumeMounts:
+                - name: secrets
+                  mountPath: /etc/secrets
+                  readOnly: true
+          volumes:
+            - name: secrets
+              secret:
+                secretName: mm-${ENVIRONMENT}-entitlements-checker-credentials
+          restartPolicy: Never
+  concurrencyPolicy: Forbid

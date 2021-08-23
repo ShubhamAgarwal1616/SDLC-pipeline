@@ -1,0 +1,107 @@
+stages:
+  - build
+  - deploy-stubs
+  - deploy-integration
+#  - deploy-prod
+
+###############################
+########## Variables ##########
+###############################
+variables:
+  CONTAINER_IMAGE: eu.gcr.io/jl-container-images/entitlements/offer-code-publisher
+  ENVIRONMENT: ${CI_ENVIRONMENT_NAME}
+
+.stubs:
+  variables:
+    CI_SERVICE_ACCOUNT_KEY: $CI_SERVICE_ACCOUNT_KEY_FLEX
+    K8S_PROJECT: jl-platform-k8s-flex
+    CLUSTER: $K8S_CLUSTER_NAME_FLEX
+    REGION: $K8S_CLUSTER_REGION_FLEX
+  environment:
+    name: stubs
+
+.integration:
+  variables:
+    CI_SERVICE_ACCOUNT_KEY: $CI_SERVICE_ACCOUNT_KEY_FLEX
+    K8S_PROJECT: jl-platform-k8s-flex
+    CLUSTER: $K8S_CLUSTER_NAME_FLEX
+    REGION: $K8S_CLUSTER_REGION_FLEX
+  environment:
+    name: integration
+
+.prod:
+  variables:
+    CI_SERVICE_ACCOUNT_KEY: $CI_SERVICE_ACCOUNT_KEY_PROD
+    K8S_PROJECT: jl-platform-k8s-prod
+    CLUSTER: $K8S_CLUSTER_NAME_PROD
+    REGION: $K8S_CLUSTER_REGION_PROD
+  environment:
+    name: prod
+
+.deploy:
+  image: eu.gcr.io/jl-container-images/platform/jldp-deploy-tools:20.08
+  before_script:
+    # Authenticate with GKE
+    - printf "%s" "$CI_SERVICE_ACCOUNT_KEY" > /tmp/key.json
+    - gcloud auth activate-service-account --key-file=/tmp/key.json
+    - gcloud container clusters get-credentials ${CLUSTER} --region ${REGION} --project ${K8S_PROJECT}
+  script:
+    - (cd k8s/${CI_ENVIRONMENT_NAME}; kustomize edit set image ${CONTAINER_IMAGE}:${CI_PIPELINE_IID})
+    - kustomize build k8s/${CI_ENVIRONMENT_NAME} | envsubst '${ENVIRONMENT}' | kubectl apply -f -
+
+###########################
+########## Build ##########
+###########################
+
+build:
+  stage: build
+  image: adoptopenjdk:11-jdk-hotspot
+  variables:
+    GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.console=plain -Djib.console=plain
+  before_script:
+    - export GRADLE_USER_HOME=$(pwd)/.gradle
+    - printf "%s" "${CI_SERVICE_ACCOUNT_KEY_FLEX}" > /tmp/google-credentials.json
+    - export GOOGLE_APPLICATION_CREDENTIALS=/tmp/google-credentials.json
+  script:
+    - ./gradlew build
+    - ./gradlew jib
+  cache:
+    paths:
+      - .gradle
+    key:
+      files:
+        - gradle/wrapper/gradle-wrapper.properties
+
+############################
+########## Deploy ##########
+############################
+deploy-stubs:
+  stage: deploy-stubs
+  needs:
+    - job: build
+  extends:
+    - .deploy
+    - .stubs
+  only:
+    - master
+
+deploy-integration:
+  stage: deploy-integration
+  needs:
+    - job: deploy-stubs
+  extends:
+    - .deploy
+    - .integration
+  only:
+    - master
+
+#deploy-prod:
+#  stage: deploy-prod
+#  needs:
+#    - job: deploy-integration
+#  extends:
+#    - .deploy
+#    - .prod
+#  only:
+#    - master
+#  when: manual
