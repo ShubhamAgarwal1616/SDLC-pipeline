@@ -16,8 +16,8 @@ class OfferCodeMapperTest {
     private val name = "name"
     private val title = "title"
     private val promotionId = "promotionId"
-    private val timestampStartDate = Timestamp.parseTimestamp("2021-06-01T00:00:00Z")
-    private val timestampEndDate = Timestamp.parseTimestamp("2022-06-01T00:00:00Z")
+    private val timestampStartDate = Timestamp.parseTimestamp("2021-06-01T19:22:12.222Z")
+    private val timestampEndDate = Timestamp.parseTimestamp("2022-06-01T11:55:58.128Z")
 
     @Test
     fun `createOfferCodeFrom should return OfferCode`() {

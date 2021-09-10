@@ -12,8 +12,8 @@ import com.johnlewis.offercodepublisher.mapper.OfferCodeMapper
 import com.johnlewis.offercodepublisher.services.impl.PubSubPublisherImpl
 import io.mockk.*
 
-
 class OfferPublisherRunnerTest {
+
     private val datastore = mockk<Datastore>()
     private val pubSubPublisher = mockk<PubSubPublisherImpl>()
     private val mapper = mockk<OfferCodeMapper>()
@@ -31,8 +31,8 @@ class OfferPublisherRunnerTest {
         promotionId = promotionId,
         name = name,
         title = title,
-        startDate =  Timestamp.parseTimestamp("2021-06-01T00:00:00Z"),
-        endDate = Timestamp.parseTimestamp("2022-06-01T00:00:00Z")
+        startDate =  Timestamp.parseTimestamp("2021-04-01T15:25:22.455Z"),
+        endDate = Timestamp.parseTimestamp("2022-06-01T05:08:12.988Z")
     )
 
     @Test
@@ -53,7 +53,7 @@ class OfferPublisherRunnerTest {
         verify(atLeast = 1) {
             queryResults.hasNext()
             queryResults.next()
-            mapper.createOfferCodeFrom(any<Entity>())
+            mapper.createOfferCodeFrom(any())
         }
     }
 

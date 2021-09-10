@@ -6,14 +6,18 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.google.cloud.Timestamp
 import java.io.IOException
+import java.time.format.DateTimeFormatter
 
 class TimestampSerializer : JsonSerializer<Timestamp>() {
 
+    var dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+
     @Throws(IOException::class, JsonProcessingException::class)
     override fun serialize(value: Timestamp?, gen: JsonGenerator?, serializers: SerializerProvider?) {
+
         gen?.let { jGen ->
             value?.let { timestamp ->
-                jGen.writeString(timestamp.toString())
+                jGen.writeString(dateFormat.format(timestamp.toSqlTimestamp().toLocalDateTime()))
             } ?: jGen.writeNull()
         }
     }
