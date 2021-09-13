@@ -16,7 +16,7 @@ class PubSubPublisherImpl(
     private val source: String
 ) : PubSubPublisher {
 
-    val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     override fun publishMessage(offerCodes: List<OfferCode>) {
 
@@ -29,6 +29,7 @@ class PubSubPublisherImpl(
                 total = offerCodes.size,
                 offerCodes = offerCodes
             )
+
             val pubsubMessage = PubsubMessage.newBuilder()
                 .setData(ByteString.copyFrom(mapper.writeValueAsString(reportData), Charsets.UTF_8))
                 .putAllAttributes(
