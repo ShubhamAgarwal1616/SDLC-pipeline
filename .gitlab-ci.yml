@@ -2,11 +2,16 @@ stages:
   - build
   - deploy-stubs
   - deploy-integration
-#  - deploy-prod
+  - deploy-prod
+
+default:
+  tags:
+  - jldp-ci
 
 ###############################
 ########## Variables ##########
 ###############################
+
 variables:
   CONTAINER_IMAGE: eu.gcr.io/jl-container-images/entitlements/offer-code-publisher
   ENVIRONMENT: ${CI_ENVIRONMENT_NAME}
@@ -17,6 +22,7 @@ variables:
     K8S_PROJECT: jl-platform-k8s-flex
     CLUSTER: $K8S_CLUSTER_NAME_FLEX
     REGION: $K8S_CLUSTER_REGION_FLEX
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: ci-flex
   environment:
     name: stubs
 
@@ -26,6 +32,7 @@ variables:
     K8S_PROJECT: jl-platform-k8s-flex
     CLUSTER: $K8S_CLUSTER_NAME_FLEX
     REGION: $K8S_CLUSTER_REGION_FLEX
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: ci-flex
   environment:
     name: integration
 
@@ -35,15 +42,13 @@ variables:
     K8S_PROJECT: jl-platform-k8s-prod
     CLUSTER: $K8S_CLUSTER_NAME_PROD
     REGION: $K8S_CLUSTER_REGION_PROD
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: ci-prod
   environment:
     name: prod
 
 .deploy:
   image: eu.gcr.io/jl-container-images/platform/jldp-deploy-tools:20.08
   before_script:
-    # Authenticate with GKE
-    - printf "%s" "$CI_SERVICE_ACCOUNT_KEY" > /tmp/key.json
-    - gcloud auth activate-service-account --key-file=/tmp/key.json
     - gcloud container clusters get-credentials ${CLUSTER} --region ${REGION} --project ${K8S_PROJECT}
   script:
     - (cd k8s/${CI_ENVIRONMENT_NAME}; kustomize edit set image ${CONTAINER_IMAGE}:${CI_PIPELINE_IID})
@@ -75,6 +80,7 @@ build:
 ############################
 ########## Deploy ##########
 ############################
+
 deploy-stubs:
   stage: deploy-stubs
   needs:
@@ -82,8 +88,6 @@ deploy-stubs:
   extends:
     - .deploy
     - .stubs
-  only:
-    - master
 
 deploy-integration:
   stage: deploy-integration
@@ -95,13 +99,13 @@ deploy-integration:
   only:
     - master
 
-#deploy-prod:
-#  stage: deploy-prod
-#  needs:
-#    - job: deploy-integration
-#  extends:
-#    - .deploy
-#    - .prod
-#  only:
-#    - master
-#  when: manual
+deploy-prod:
+  stage: deploy-prod
+  needs:
+    - job: deploy-integration
+  extends:
+    - .deploy
+    - .prod
+  only:
+    - master
+  when: manual
