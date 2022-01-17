@@ -18,3 +18,5 @@ configMapGenerator:
     behavior: merge
     envs:
       - application.env
+    literals:
+      - CONTRAST__ENABLE=false

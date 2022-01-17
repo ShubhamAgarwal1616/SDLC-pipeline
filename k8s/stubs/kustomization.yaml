@@ -18,3 +18,10 @@ configMapGenerator:
     behavior: merge
     envs:
       - application.env
+    literals:
+      - CONTRAST__ENABLE=true
+      - CONTRAST__AGENT__JAVA__STANDALONE_APP_NAME=${CONTRAST_APP_NAME}
+      - CONTRAST__AGENT__LOGGER__STDOUT=true
+      - CONTRAST__SERVER__NAME=${CONTRAST_SERVER}
+      - CONTRAST__SERVER__ENVIRONMENT=development
+      - CONTRAST__API__URL="https://app.contrastsecurity.com/Contrast"
