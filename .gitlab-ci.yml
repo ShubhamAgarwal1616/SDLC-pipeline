@@ -1,5 +1,6 @@
 stages:
   - build
+  - security-test
   - deploy-stubs
   - deploy-integration
   - deploy-prod
@@ -14,6 +15,9 @@ default:
 
 variables:
   CONTAINER_IMAGE: eu.gcr.io/jl-container-images/entitlements/offer-code-publisher
+  CONTRAST_APP_NAME: "${TENANT_NAME}-offer-code-publisher"
+  CONTRAST_SERVER: "${TENANT_NAME}-offer-code-publisher-${CI_PIPELINE_IID}"
+  CONTRAST_APP_ID: "b5369cae-7a5a-4ac3-a87e-bf53f4fa195f"
   ENVIRONMENT: ${CI_ENVIRONMENT_NAME}
 
 .stubs:
@@ -52,7 +56,7 @@ variables:
     - gcloud container clusters get-credentials ${CLUSTER} --region ${REGION} --project ${K8S_PROJECT}
   script:
     - (cd k8s/${CI_ENVIRONMENT_NAME}; kustomize edit set image ${CONTAINER_IMAGE}:${CI_PIPELINE_IID})
-    - kustomize build k8s/${CI_ENVIRONMENT_NAME} | envsubst '${ENVIRONMENT}' | kubectl apply -f -
+    - kustomize build k8s/${CI_ENVIRONMENT_NAME} | envsubst '${ENVIRONMENT} ${CONTRAST_SERVER} ${CONTRAST_APP_NAME} ${CONTRAST_AGENT_USERNAME} ${CONTRAST_AGENT_SERVICE_KEY} ${CONTRAST_API_KEY}' | kubectl apply -f -
 
 ###########################
 ########## Build ##########
@@ -109,3 +113,19 @@ deploy-prod:
   only:
     - master
   when: manual
+
+############################
+########## Tests ###########
+############################
+
+check-dependency-vulnerabilities:
+  stage: security-test
+  image: adoptopenjdk/openjdk11:alpine-jre
+  script:
+    - apk add npm
+    - npm install -g @contrast/contrast-cli
+    - contrast-cli --api_key ${CONTRAST_API_KEY} --authorization ${CONTRAST_AUTH} --organization_id ${CONTRAST_ORG_UUID} --language JAVA --application_name ${CONTRAST_APP_NAME} --application_id ${CONTRAST_APP_ID} --report --fail
+  allow_failure: true
+
+
+
