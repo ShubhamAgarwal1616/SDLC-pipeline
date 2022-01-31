@@ -125,6 +125,8 @@ check-dependency-vulnerabilities:
     - npm install -g @contrast/contrast-cli
     - contrast-cli --api_key ${CONTRAST_API_KEY} --authorization ${CONTRAST_AUTH} --organization_id ${CONTRAST_ORG_UUID} --language JAVA --application_name ${CONTRAST_APP_NAME} --application_id ${CONTRAST_APP_ID} --report --fail
   allow_failure: true
+  only:
+    - develop
 
 
 
