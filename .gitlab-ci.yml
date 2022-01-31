@@ -98,8 +98,6 @@ deploy-stubs:
 
 deploy-integration:
   stage: deploy-integration
-  needs:
-    - job: deploy-stubs
   extends:
     - .deploy
     - .integration
@@ -108,8 +106,6 @@ deploy-integration:
 
 deploy-prod:
   stage: deploy-prod
-  needs:
-    - job: deploy-integration
   extends:
     - .deploy
     - .prod
