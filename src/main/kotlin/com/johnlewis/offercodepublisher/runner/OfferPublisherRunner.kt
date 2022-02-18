@@ -27,6 +27,7 @@ class OfferPublisherRunner(
         val offerCodes = mutableListOf<OfferCode>()
         val twoYearsAgo = java.sql.Timestamp.valueOf(LocalDateTime.now().minusYears(2))
 
+        logger.info {"Creating filters for query"}
         val filters = listOf(
             StructuredQuery.CompositeFilter.and(
                 StructuredQuery.PropertyFilter.isNull(
@@ -45,6 +46,7 @@ class OfferPublisherRunner(
             )
         )
 
+        logger.info {"Perform query for each filter"}
         filters.forEach { filter ->
             performQuery(
                 filter
@@ -53,6 +55,7 @@ class OfferPublisherRunner(
             }
         }
 
+        logger.info {"Returning filtered offerCodes"}
         return offerCodes.distinctBy { offerCode ->
             offerCode.couponId
         }.filter {
@@ -71,10 +74,10 @@ class OfferPublisherRunner(
                 .setKind(Constants.OFFER_CODE_KIND)
                 .setFilter(filter)
                 .build()
-
+            logger.info {"Successfully performed query, returning offerCodes "}
             return datastore.run(query)
         } catch (e: Exception) {
-            logger.error(e) { "Exception thrown while getting records from ${Constants.OFFER_CODE_KIND} because ${e.cause}" }
+            logger.error(e) { "Exception thrown while getting records from ${Constants.OFFER_CODE_KIND} because ${e.cause} and with message ${e.message}" }
             throw e
         }
     }
