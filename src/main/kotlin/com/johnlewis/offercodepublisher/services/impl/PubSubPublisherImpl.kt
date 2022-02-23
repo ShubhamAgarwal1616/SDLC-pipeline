@@ -48,6 +48,7 @@ class PubSubPublisherImpl(
 
             logger.info { "Published ${reportData.total} offer codes." }
         } catch (e: Exception) {
+            logger.info { "Could not publish the report"}
             throw RuntimeException("Could not publish message  ${e.message}")
         } finally {
             if (publisher != null) {
