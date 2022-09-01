@@ -115,7 +115,7 @@ jib {
     }
 
     from {
-        image = "eu.gcr.io/jl-container-images/jldp-security/distroless-jvm:11"
+        image = "eu.gcr.io/jl-container-images/jldp-security/distroless-java11:latest"
     }
     to {
         image = "eu.gcr.io/jl-container-images/entitlements/offer-code-publisher"
