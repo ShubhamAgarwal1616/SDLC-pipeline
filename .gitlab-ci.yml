@@ -1,9 +1,16 @@
+include:
+  - project: 'JohnLewisPartnership/digital/services/entitlements/change-management-script'
+    ref: main
+    file: '.change-management-script.yml'
+
 stages:
   - build
   - security-test
   - deploy-stubs
   - deploy-integration
+  - create-change
   - deploy-prod
+  - close-change
 
 default:
   tags:
