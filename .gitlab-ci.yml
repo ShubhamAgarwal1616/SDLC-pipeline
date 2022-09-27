@@ -99,9 +99,6 @@ deploy-stubs:
   extends:
     - .deploy
     - .stubs
-  except:
-    - master
-    - develop
 
 deploy-integration:
   stage: deploy-integration
@@ -109,7 +106,7 @@ deploy-integration:
     - .deploy
     - .integration
   only:
-    - develop
+    - master
 
 deploy-prod:
   stage: deploy-prod
