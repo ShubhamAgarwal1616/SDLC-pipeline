@@ -12,9 +12,6 @@ stages:
   - deploy-prod
   - close-change
 
-default:
-  tags:
-  - jldp-ci
 
 ###############################
 ########## Variables ##########
