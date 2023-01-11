@@ -26,7 +26,6 @@ variables:
 
 .stubs:
   variables:
-    CI_SERVICE_ACCOUNT_KEY: $CI_SERVICE_ACCOUNT_KEY_FLEX
     K8S_PROJECT: jl-platform-k8s-flex
     CLUSTER: $K8S_CLUSTER_NAME_FLEX
     REGION: $K8S_CLUSTER_REGION_FLEX
@@ -36,7 +35,6 @@ variables:
 
 .integration:
   variables:
-    CI_SERVICE_ACCOUNT_KEY: $CI_SERVICE_ACCOUNT_KEY_FLEX
     K8S_PROJECT: jl-platform-k8s-flex
     CLUSTER: $K8S_CLUSTER_NAME_FLEX
     REGION: $K8S_CLUSTER_REGION_FLEX
@@ -46,7 +44,6 @@ variables:
 
 .prod:
   variables:
-    CI_SERVICE_ACCOUNT_KEY: $CI_SERVICE_ACCOUNT_KEY_PROD
     K8S_PROJECT: jl-platform-k8s-prod
     CLUSTER: $K8S_CLUSTER_NAME_PROD
     REGION: $K8S_CLUSTER_REGION_PROD
@@ -73,8 +70,6 @@ build:
     GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.console=plain -Djib.console=plain
   before_script:
     - export GRADLE_USER_HOME=$(pwd)/.gradle
-    - printf "%s" "${CI_SERVICE_ACCOUNT_KEY_FLEX}" > /tmp/google-credentials.json
-    - export GOOGLE_APPLICATION_CREDENTIALS=/tmp/google-credentials.json
   script:
     - ./gradlew build
     - ./gradlew jib
