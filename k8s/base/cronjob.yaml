@@ -35,6 +35,6 @@ spec:
           volumes:
             - name: secrets
               secret:
-                secretName: mm-${ENVIRONMENT}-entitlements-checker-credentials
+                secretName: mm-sa-key-${ENVIRONMENT}-entitlements-checker
           restartPolicy: Never
   concurrencyPolicy: Forbid
