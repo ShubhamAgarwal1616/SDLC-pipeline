@@ -1,36 +1,36 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
-    id("org.owasp.dependencycheck") version "6.1.5"
+    kotlin("jvm") version "1.9.0"
+    id("org.owasp.dependencycheck") version "8.1.1"
     id("com.google.cloud.tools.jib") version "2.8.0"
     jacoco
 }
 
-val http4kVersion = "4.7.0.2"
-val junitVersion = "5.7.1"
+val http4kVersion = "5.8.0.0"
+val junitVersion = "5.9.0"
 val mockkVersion = "1.11.0"
 val striktVersion = "0.30.1"
 val junitPlatformVersion = "1.7.1"
 val slf4jVersion = "2.0.0-alpha1"
 val logbackVersion = "1.3.0-alpha5"
 val contrastVersion = "3.8.3.19749"
+val kotlinVersion = "1.7.21"
+
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-
     implementation("com.google.cloud:google-cloud-datastore")
     implementation("com.google.cloud:google-cloud-pubsub")
-    implementation(platform("com.google.cloud:libraries-bom:20.1.0"))
+    implementation(platform("com.google.cloud:libraries-bom:26.25.0"))
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:jul-to-slf4j:$slf4jVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.google.guava:guava:29.0-jre")
-    implementation("org.owasp", "dependency-check-gradle", "6.1.5")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("com.google.guava:guava:32.0.0")
     implementation("io.github.microutils:kotlin-logging:1.7.8")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
@@ -47,10 +47,10 @@ dependencies {
     implementation("io.github.resilience4j", "resilience4j-circuitbreaker", "1.7.0")
     implementation("commons-codec", "commons-codec", "1.5")
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.12")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
@@ -86,13 +86,11 @@ tasks.jacocoTestReport {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "11"
-        languageVersion = "1.4"
-        apiVersion = "1.4"
     }
 }
 
 jacoco {
-    toolVersion = "0.8.6"
+    toolVersion = "0.8.7"
     reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
