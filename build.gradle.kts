@@ -12,7 +12,6 @@ val striktVersion = "0.30.1"
 val junitPlatformVersion = "1.7.1"
 val slf4jVersion = "2.0.0-alpha1"
 val logbackVersion = "1.3.0-alpha5"
-val contrastVersion = "3.8.3.19749"
 val kotlinVersion = "1.7.21"
 
 
@@ -60,7 +59,6 @@ dependencies {
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
-    runtimeOnly("com.contrastsecurity:contrast-agent:$contrastVersion")
 }
 
 tasks.test {
@@ -109,7 +107,6 @@ jib {
     container {
         mainClass = "com.johnlewis.offercodepublisher.ApplicationKt"
         creationTime = "USE_CURRENT_TIMESTAMP"
-        jvmFlags = listOf("-Dcontrast.dir=/tmp/contrast", "-javaagent:/app/libs/contrast-agent-$contrastVersion.jar")
     }
 
     from {
