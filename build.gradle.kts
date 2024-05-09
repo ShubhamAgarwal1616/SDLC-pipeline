@@ -10,8 +10,8 @@ val junitVersion = "5.9.0"
 val mockkVersion = "1.11.0"
 val striktVersion = "0.30.1"
 val junitPlatformVersion = "1.7.1"
-val slf4jVersion = "2.0.0-alpha1"
-val logbackVersion = "1.3.0-alpha5"
+val slf4jVersion = "2.0.9"
+val logbackVersion = "1.4.14"
 val kotlinVersion = "1.7.21"
 
 
@@ -31,7 +31,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.google.guava:guava:32.0.0")
     implementation("io.github.microutils:kotlin-logging:1.7.8")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
     implementation(platform("org.http4k:http4k-bom:$http4kVersion"))
     implementation("org.http4k:http4k-core")
