@@ -51,9 +51,9 @@ variables:
     name: prod
 
 .deploy:
-  image: eu.gcr.io/jl-container-images/platform/jldp-deploy-tools:21.04
+  image: eu.gcr.io/jl-container-images/platform/docker-images/jldp-deploy-tools:2024.09
   before_script:
-    - gcloud container clusters get-credentials ${CLUSTER} --region ${REGION} --project ${K8S_PROJECT}
+    - gcloud container clusters get-credentials ${CLUSTER} --region ${REGION} --project ${K8S_PROJECT} --dns-endpoint
   script:
     - (cd k8s/${CI_ENVIRONMENT_NAME}; kustomize edit set image ${CONTAINER_IMAGE}:${CI_PIPELINE_IID})
     - kustomize build k8s/${CI_ENVIRONMENT_NAME} | envsubst '${ENVIRONMENT}' | kubectl apply -f -

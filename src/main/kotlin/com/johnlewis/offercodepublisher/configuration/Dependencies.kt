@@ -25,7 +25,6 @@ object Dependencies {
         val datastoreOptions = DatastoreOptions.getDefaultInstance().toBuilder()
             .setNamespace(Configuration.databaseNamespace(environment))
             .setProjectId(Configuration.projectId(environment))
-            .setCredentials(GoogleCredentials.getApplicationDefault())
             .build()
         return datastoreOptions.service
     }
