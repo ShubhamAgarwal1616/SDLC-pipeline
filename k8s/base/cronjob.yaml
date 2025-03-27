@@ -25,16 +25,5 @@ spec:
               envFrom:
                 - configMapRef:
                     name: offer-code-publisher
-              env:
-                - name: GOOGLE_APPLICATION_CREDENTIALS
-                  value: "/etc/secrets/credentials.json"
-              volumeMounts:
-                - name: secrets
-                  mountPath: /etc/secrets
-                  readOnly: true
-          volumes:
-            - name: secrets
-              secret:
-                secretName: mm-sa-key-${ENVIRONMENT}-entitlements-checker
           restartPolicy: Never
   concurrencyPolicy: Forbid
