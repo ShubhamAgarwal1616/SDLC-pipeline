@@ -11,6 +11,7 @@ spec:
       backoffLimit: 0 # number of retries before throwing error
       template:
         spec:
+          serviceAccountName: ${ENVIRONMENT}-offer-code-publisher
           containers:
             - name: job
               image: eu.gcr.io/jl-container-images/entitlements/offer-code-publisher:latest
@@ -25,16 +26,5 @@ spec:
               envFrom:
                 - configMapRef:
                     name: offer-code-publisher
-              env:
-                - name: GOOGLE_APPLICATION_CREDENTIALS
-                  value: "/etc/secrets/credentials.json"
-              volumeMounts:
-                - name: secrets
-                  mountPath: /etc/secrets
-                  readOnly: true
-          volumes:
-            - name: secrets
-              secret:
-                secretName: mm-sa-key-${ENVIRONMENT}-entitlements-checker
           restartPolicy: Never
   concurrencyPolicy: Forbid
