@@ -11,6 +11,7 @@ spec:
       backoffLimit: 0 # number of retries before throwing error
       template:
         spec:
+          serviceAccountName: $(ENVIRONMENT)-offer-code-publisher
           containers:
             - name: job
               image: eu.gcr.io/jl-container-images/entitlements/offer-code-publisher:latest
