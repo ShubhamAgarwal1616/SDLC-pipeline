@@ -9,7 +9,6 @@ commonLabels:
 resources:
   - cronjob.yaml
   - configmap.yaml
-  - serviceAccount.yaml
 
 configMapGenerator:
   - name: offer-code-publisher
