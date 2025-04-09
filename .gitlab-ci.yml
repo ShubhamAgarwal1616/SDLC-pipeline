@@ -7,7 +7,6 @@ include:
 
 stages:
   - build
-  - security-test
   - deploy-stubs
   - deploy-integration
   - create-change
@@ -64,7 +63,7 @@ variables:
 
 build:
   stage: build
-  image: adoptopenjdk:11-jdk-hotspot
+  image: eu.gcr.io/jl-container-images/platform/docker-images/jldp-deploy-tools:2024.02.1-jre.17
   variables:
     GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.console=plain -Djib.console=plain
   before_script:
@@ -113,11 +112,11 @@ deploy-prod:
 ############################
 
 security-scan:
-  stage: security-test
+  stage: build
   extends: .snyk-code-scanner
 
 security-library-scan:
-  stage: security-test
+  stage: build
   extends: .snyk-library-scanner
 
 

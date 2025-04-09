@@ -6,8 +6,8 @@ import com.google.cloud.datastore.DatastoreOptions
 import com.johnlewis.offercodepublisher.mapper.OfferCodeMapper
 import com.johnlewis.offercodepublisher.runner.OfferPublisherRunner
 import com.johnlewis.offercodepublisher.services.impl.PubSubPublisherImpl
-import org.http4k.cloudnative.env.Environment
-import org.http4k.cloudnative.env.MapEnvironment
+import org.http4k.config.Environment
+import org.http4k.config.MapEnvironment
 
 object Dependencies {
     private val environment = Environment.fromOptionalResource("override.properties") overrides
