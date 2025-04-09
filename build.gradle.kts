@@ -5,9 +5,9 @@ plugins {
     jacoco
 }
 
-val http4kVersion = "5.8.0.0"
+val http4kVersion = "5.45.2.0"
 val junitVersion = "5.9.0"
-val mockkVersion = "1.11.0"
+val mockkVersion = "1.12.0"
 val striktVersion = "0.30.1"
 val junitPlatformVersion = "1.7.1"
 val slf4jVersion = "2.0.9"
@@ -22,7 +22,7 @@ repositories {
 dependencies {
     implementation("com.google.cloud:google-cloud-datastore")
     implementation("com.google.cloud:google-cloud-pubsub")
-    implementation(platform("com.google.cloud:libraries-bom:26.25.0"))
+    implementation(platform("com.google.cloud:libraries-bom:26.52.0"))
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:jul-to-slf4j:$slf4jVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
@@ -82,7 +82,7 @@ tasks.jacocoTestReport {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -109,7 +109,7 @@ jib {
     }
 
     from {
-        image = "eu.gcr.io/jl-container-images/jldp-security/distroless-java11:latest"
+        image = "eu.gcr.io/jl-container-images/jldp-security/distroless-java17:latest"
     }
     to {
         image = "eu.gcr.io/jl-container-images/entitlements/offer-code-publisher"
