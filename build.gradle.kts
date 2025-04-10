@@ -7,10 +7,11 @@ plugins {
 
 val http4kVersion = "5.45.2.0"
 val junitVersion = "5.9.0"
-val mockkVersion = "1.12.0"
-val striktVersion = "0.30.1"
+
+val mockkVersion = "1.13.17"
+val striktVersion = "0.35.1"
 val junitPlatformVersion = "1.7.1"
-val slf4jVersion = "2.0.9"
+val slf4jVersion = "2.0.17"
 val logbackVersion = "1.4.14"
 val kotlinVersion = "1.7.21"
 
@@ -22,7 +23,8 @@ repositories {
 dependencies {
     implementation("com.google.cloud:google-cloud-datastore")
     implementation("com.google.cloud:google-cloud-pubsub")
-    implementation(platform("com.google.cloud:libraries-bom:26.52.0"))
+
+    implementation(platform("com.google.cloud:libraries-bom:26.59.0"))
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:jul-to-slf4j:$slf4jVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
@@ -43,7 +45,7 @@ dependencies {
     implementation("org.http4k:http4k-cloudnative")
     implementation("org.http4k:http4k-metrics-micrometer")
     implementation("io.github.resilience4j", "resilience4j-circuitbreaker", "1.7.0")
-    implementation("commons-codec", "commons-codec", "1.5")
+    implementation("commons-codec", "commons-codec", "1.18.0")
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.12")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
@@ -87,7 +89,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.13"
     reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
@@ -98,7 +100,7 @@ buildscript {
                 strictly("30.1.1-jre")
             }
         }
-        classpath("com.google.cloud.tools:jib-layer-filter-extension-gradle:0.1.0")
+        classpath("com.google.cloud.tools:jib-layer-filter-extension-gradle:0.3.0")
     }
 }
 
