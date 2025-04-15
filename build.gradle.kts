@@ -6,11 +6,11 @@ plugins {
 }
 
 val http4kVersion = "5.45.2.0"
-val junitVersion = "5.9.0"
+val junitVersion = "5.12.2"
 
 val mockkVersion = "1.13.17"
 val striktVersion = "0.35.1"
-val junitPlatformVersion = "1.7.1"
+val junitPlatformVersion = "1.12.2"
 val slf4jVersion = "2.0.17"
 val logbackVersion = "1.4.14"
 val kotlinVersion = "1.7.21"
