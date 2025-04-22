@@ -12,7 +12,7 @@ val mockkVersion = "1.14.0"
 val striktVersion = "0.35.1"
 val junitPlatformVersion = "1.12.2"
 val slf4jVersion = "2.0.17"
-val logbackVersion = "1.4.14"
+val logbackVersion = "1.5.18"
 val kotlinVersion = "1.7.21"
 
 
