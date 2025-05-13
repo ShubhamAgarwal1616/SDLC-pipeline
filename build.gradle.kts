@@ -24,7 +24,7 @@ dependencies {
     implementation("com.google.cloud:google-cloud-datastore")
     implementation("com.google.cloud:google-cloud-pubsub")
 
-    implementation(platform("com.google.cloud:libraries-bom:26.59.0"))
+    implementation(platform("com.google.cloud:libraries-bom:26.60.0"))
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:jul-to-slf4j:$slf4jVersion")
     implementation("ch.qos.logback:logback-core:$logbackVersion")
