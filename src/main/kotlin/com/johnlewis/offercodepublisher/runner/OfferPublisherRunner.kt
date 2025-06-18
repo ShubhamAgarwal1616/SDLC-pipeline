@@ -27,7 +27,7 @@ class OfferPublisherRunner(
         val offerCodes = mutableListOf<OfferCode>()
         val twoYearsAgo = java.sql.Timestamp.valueOf(LocalDateTime.now().minusYears(2))
 
-        logger.info {"Creating filters for query"}
+        logger.info {"Creating filters for query for time $twoYearsAgo"}
         val filters = listOf(
             StructuredQuery.CompositeFilter.and(
                 StructuredQuery.PropertyFilter.isNull(
