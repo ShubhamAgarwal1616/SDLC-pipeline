@@ -1,0 +1,13 @@
+# Org repo registry (PLAN.md §18): which repos exist, what each owns, and who depends on whom.
+# Used for multi-repo features: system map for planning, per-repo changes, cross-repo Blocks links,
+# feature-run ordering, and mounting a provider's living specs into a consumer's sandbox as its contract.
+repos:
+  notes-api:
+    github: Auranestt-candles/workflow-test
+    description: Kotlin/Http4k notes REST API (provider). Owns the HTTP endpoints, API keys and rate limiting.
+    owns: [notes, rate-limiting, api-keys]
+  notes-client:
+    github: Auranestt-candles/workflow-test-2
+    description: Kotlin client library for notes-api (consumer). Owns how callers talk to the API.
+    owns: [notes-client]
+    depends_on: [notes-api]

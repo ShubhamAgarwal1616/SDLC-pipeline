@@ -1,0 +1,8 @@
+# Never send secrets, run state or local envs into an image build context
+.env
+.env.*
+runs/
+.venv/
+**/__pycache__/
+.pytest_cache/
+*.html

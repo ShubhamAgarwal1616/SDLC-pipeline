@@ -1,0 +1,23 @@
+I want to create a workflow that i should be able to run a paipeline for SDLC.
+The workflow should use hardcoaded scripts, claude skills and LLM to create a end to end process that will take requirements and context in form of a markdown file and grill user to clarify the requirements and context, create a jira tickets, push them on JIRA board and later on providing a ticket for the input it will implement it and raise a MR on gitlab.
+
+I want the workflow in 2 phases to work:
+
+1 phase:
+It will be responsible for talking with JIRA, gitlab/github and will have authentication for all 3rd party services either by MCP or scripts and will be responsible to add confluence doc and raising MR etc.
+
+2 phase
+it will be a dumb phase inside a docker which will not have access to any 3 party service like JIRA, gitlab, guthub etc. It will have access to only LLM skills and and all the things needed to implement the code or clarify the requirements and take input from phase 1 and works on top of that and return the output to pahse one. better it all the things in phase 1 happens inside a docker container that will be abstract.
+
+Other things come in mind:
+- monitoring should be there to track the amount of tokens and cost and time and other observabilities
+- workflow should be like a pipeline with different stages and with feedback loop and failure handling
+- Feedback should be taken from user aftre clarifying the req and genrating context file and pushing it on confluence/jira and loop should there on feedback before going to next stages
+- similary after raising MR code review will happen by user and loop should happen on that.
+- model and other things should be configurable as much as possible
+- model calls should be minimum to keep cost minimum and use script wherever we can work with scripst without calling LLM
+- Think about security and add necessary guarrails
+- there should be code review stage after implementation of code.
+- it should be possible to choose different llm models for different stages wherever llm calls will happen.
+
+I want to build a workflow demo, Create a plan and with detailed steps and how we can create one. what skills will be required and what stages will be built and what stage will come after what.

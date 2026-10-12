@@ -1,0 +1,82 @@
+# Offline semgrep rules for the verify runner (P8). ERROR fails verify; WARNING is reported only.
+# Kotlin rules mirror kotlin-service-standards rule ids where they exist. TypeScript/JavaScript rules: ts-*.
+rules:
+  - id: kotlin-not-null-assertion
+    message: "`!!` is forbidden (STYLE-01): use ?., ?:, requireNotNull with a message, or sealed types."
+    languages: [kotlin]
+    severity: ERROR
+    pattern: $X!!
+
+  - id: kotlin-runtime-exec
+    message: Running external processes from application code is not allowed.
+    languages: [kotlin]
+    severity: ERROR
+    pattern-either:
+      - pattern: Runtime.getRuntime().exec(...)
+      - pattern: ProcessBuilder(...)
+
+  - id: kotlin-thread-sleep-in-tests
+    message: "Thread.sleep() in tests is forbidden (TEST-08): wait on a condition (eventually) or use a controllable clock."
+    languages: [kotlin]
+    severity: ERROR
+    paths:
+      include: ["src/test/**", "**/src/test/**"]
+    pattern: Thread.sleep(...)
+
+  - id: kotlin-println-outside-entrypoint
+    message: "Use logging in adapters/Application.kt only (ARCH-12); no println in domain or services."
+    languages: [kotlin]
+    severity: WARNING
+    paths:
+      include: ["**/domain/**", "**/services/**", "domain/**", "services/**"]
+    pattern: println(...)
+
+  - id: hardcoded-credential
+    message: Looks like a hard-coded credential. Read it from configuration instead.
+    languages: [generic]
+    severity: ERROR
+    paths:
+      exclude: ["src/test/**", "**/src/test/**", "test/**", "**/*.test.ts", "**/*.test.js", "**/*.md", "package-lock.json"]
+    pattern-regex: (?i)(api[_-]?key|secret|password|token)\s*[:=]\s*["'][A-Za-z0-9/+_\-]{20,}["']
+
+  - id: prompt-injection-marker
+    message: Text that tries to instruct an AI agent or reviewer. Remove it, or explain why it's there.
+    languages: [generic]
+    severity: ERROR
+    paths:
+      exclude: ["**/*.md", "openspec/**", ".claude/**"]
+    pattern-regex: (?i)(ignore (all )?(previous|prior|above) instructions|note to (the )?ai|ai reviewer:|you are now|system prompt)
+
+  - id: ts-dynamic-code
+    message: eval() and new Function() run arbitrary strings as code. Not allowed.
+    languages: [typescript, javascript]
+    severity: ERROR
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+
+  - id: ts-child-process
+    message: Running external processes from application code is not allowed (child_process).
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["src/**/*.ts", "src/**/*.js", "src/**/*.mts", "src/**/*.cts"]
+    pattern-regex: (?:from\s+|require\(\s*)['"](?:node:)?child_process['"]
+
+  - id: ts-console-in-core
+    message: "No console.* in domain or services: log in adapters only."
+    languages: [typescript, javascript]
+    severity: WARNING
+    paths:
+      include: ["**/domain/**", "**/services/**"]
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.error(...)
+
+  - id: ts-ignore-comment
+    message: "@ts-ignore / @ts-nocheck hide type errors: fix the type instead."
+    languages: [generic]
+    severity: WARNING
+    paths:
+      include: ["src/**/*.ts"]
+    pattern-regex: "@ts-(ignore|nocheck)"

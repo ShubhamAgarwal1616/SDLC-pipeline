@@ -1,0 +1,28 @@
+# Phase 1 services for local mode. The sandbox network is internal: containers on it
+# can reach llm-gateway and nothing else. The gateway is also on an egress network.
+name: sdlc
+
+services:
+  llm-gateway:
+    build: { context: ., dockerfile: gateway/Dockerfile }
+    image: sdlc-gateway:dev
+    container_name: llm-gateway
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?set OPENROUTER_API_KEY in .env}   # only this var, not all of .env
+      UPSTREAM_BASE: https://openrouter.ai/api
+      MODEL_MAP_JSON: ${SDLC_MODEL_MAP_JSON:-}                                   # optional extra canonical → provider ids
+    volumes:
+      - ./runs/_gateway:/data            # keys.json (from orchestrator) + usage.jsonl
+    networks:
+      sandbox_internal: { aliases: [llm-gateway] }
+      egress: {}
+    ports:
+      - "127.0.0.1:4000:4000"            # host-only, for debugging
+    restart: unless-stopped
+
+networks:
+  sandbox_internal:
+    name: sdlc_internal
+    internal: true
+  egress:
+    name: sdlc_egress

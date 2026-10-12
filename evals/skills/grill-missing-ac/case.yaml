@@ -1,0 +1,12 @@
+# The grill must ask (not invent) when success criteria are missing.
+prompt: "/grill-with-docs Clarify the requirement in /io/in/inputs/requirements.md (the user's plan). Gaps found by intake are in /io/in/inputs/intake.json. Follow the stage contract."
+contract: grill.md
+inputs: {requirements.md: requirements.md, intake.json: intake.json}
+expected_outputs: [qa-log.md]
+max_turns: 12
+budget_usd: 0.5
+checks:
+  - status: needs_input
+  - json: {path: questions.json, expr: "len(data['questions']) >= 1 and all(q.get('recommended') for q in data['questions'])"}
+  - regex: {path: questions.json, pattern: "(?i)(format|csv|json|pdf|which notes|all notes|who|accept|success|criteria)"}
+  - no_secret_leak: true

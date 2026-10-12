@@ -1,0 +1,116 @@
+# Org defaults — layer 1 of 3 (org → project .sdlc/pipeline.yaml → run overrides).
+# Owned by the platform team. Keys listed under `locks` can't be loosened by lower layers.
+# See PLAN.md §15.
+
+llm:
+  provider: openrouter            # openrouter | anthropic  (PLAN.md §25.1)
+  gateway_url: http://llm-gateway:4000
+  # Canonical model ids. The gateway maps them to provider ids (OpenRouter `anthropic/...`) in P2.
+  # .env can override these: SDLC_MODEL_DEFAULT, SDLC_MODEL_<STAGE>, SDLC_ALLOWED_MODELS (see .env.example).
+  allowed_models: [claude-haiku-4-5-20251001, claude-haiku-5-5, claude-sonnet-5-5, claude-opus-5-5]
+  stages:
+    grill:            { model: claude-sonnet-5-5, max_turns: 6 }
+    propose:          { model: claude-sonnet-5-5, max_turns: 15 }
+    implement:        { model: claude-sonnet-5-5, max_turns: 120 }
+    review:           { model: claude-opus-5-5, followup_model: claude-sonnet-5-5 }   # rounds 2+ use followup_model
+    resolve_comments: { model: claude-sonnet-5-5, max_turns: 20 }
+
+stages:
+  grill:     { entry_skill: grill-with-docs }
+  propose:   { entry_skills: [to-prd, openspec-propose] }
+  implement: { entry_skill: tdd }
+  review:    { entry_skill: sdlc-code-reviewer }
+  fix:       { entry_skill: sdlc-feedback-resolver }
+
+budgets:
+  max_per_run_usd: 10.00          # ceiling — locked
+  per_run_usd: 8.00
+  per_stage_usd: { grill: 1.50, propose: 1.50, implement: 4.00, review: 4.00, resolve_comments: 2.00 }   # from P3–P6 live runs (Opus review ≈ $0.35–0.5 each; ~4–6 per story)
+
+intake:
+  required_sections: [Problem, Users, Goals]
+  max_bytes: 200000
+
+grill:
+  mode: until_clear               # bounded | until_clear   (PLAN.md §22)
+  max_rounds: null                # null = no cap; bounded mode: the last round, then remaining items are assumed
+  questions_per_round: null       # cap per round, either mode (null: one question per turn, the grilling skill's rule)
+  readiness_threshold: null       # bounded mode: stop once this share of the checklist is clear/assumed (e.g. 0.8)
+  soft_warn_rounds: 6
+  checklist_retries: 2            # times A1 may be sent back when the script-checked checklist isn't clear
+  dedupe_similarity: 0.8          # a question this similar to an answered one never reaches a person again
+
+loops:
+  spec_feedback_max: 3
+  verify_retries: 3
+  review_retries: 2
+  mr_feedback_max: 5
+
+gates:
+  spec_review: true               # H1 — locked on
+  plan: false                     # H2 — optional
+  mr_review: true                 # H3 — locked on
+
+guardrails:
+  forbidden_paths: [.github/workflows/**, .gitlab-ci.yml, Dockerfile, infra/**, CLAUDE.md, .claude/**, .sdlc/**]
+  max_diff_lines: 800
+  max_files_changed: 25
+  allow_new_dependencies: false
+
+review:                           # B5 cost control (KAN-8 needed 7 Opus reviews)
+  followup_mode: true             # rounds 2+: check earlier findings + regressions only, on llm.stages.review.followup_model
+  max_blocking_per_round: 5       # more blocker/major findings are deferred to the next round
+
+validate:
+  max_tasks_per_change: 15
+
+human_wait:                       # PLAN.md §19
+  reminders_h: [24, 72]           # PR comment reminders while a run waits at a gate
+  stale_after_days: 14            # then the run escalates as stale (resume or abort)
+
+sandbox:
+  network: gateway_only           # locked
+  # Prebuilt images (published to GHCR by .github/workflows/publish-images.yml). {version} = the CLI's version.
+  # Pipeline developers use local builds instead: SDLC_WORKER_IMAGE=sdlc-worker:dev, SDLC_GATEWAY_IMAGE=sdlc-gateway:dev.
+  image: ghcr.io/shubhamagarwal1616/sdlc-worker:{version}
+  gateway_image: ghcr.io/shubhamagarwal1616/sdlc-gateway:{version}
+  docker_network: sdlc_internal
+  gateway_url: http://llm-gateway:4000
+  gateway_health_url: http://127.0.0.1:4000/health
+  pids_limit: 512
+  cpus: 2
+  memory: 4g
+  timeout_minutes: 30
+
+distribution:
+  # What `sdlc init` writes into a repo's workflow to install this CLI. {version} = the CLI's version.
+  install: git+https://github.com/shubhamagarwal1616/sdlc-pipeline@v{version}
+
+project:
+  scm: github
+  tracker: jira
+  docs: none                      # confluence | none (no Confluence yet)
+  stack: null                     # gradle | node; null = detect from the repo's files
+
+confluence:                       # used when project.docs is confluence (set in the repo's .sdlc/pipeline.yaml)
+  space: null                     # space key
+  parent_page_id: null            # optional: put requirement pages under this page
+  fake: false                     # true: write the pages to runs/_confluence/ instead (no space needed)
+
+publish:
+  epic: true                      # one Epic per requirement, one Story per OpenSpec change
+  epic_type: Epic
+  story_type: Story
+  labels: [ai-pipeline]
+  transitions: { start: In Progress, review: In Review, done: Done }
+
+locks:
+  - { key: gates.spec_review,        rule: fixed }
+  - { key: gates.mr_review,          rule: fixed }
+  - { key: budgets.max_per_run_usd,  rule: fixed }
+  - { key: budgets.per_run_usd,      rule: max, ref: budgets.max_per_run_usd }
+  - { key: llm.allowed_models,       rule: fixed }
+  - { key: "llm.stages.*.model",     rule: one_of, ref: llm.allowed_models }
+  - { key: "llm.stages.*.followup_model", rule: one_of, ref: llm.allowed_models }
+  - { key: guardrails.forbidden_paths, rule: append_only }
+  - { key: sandbox.network,          rule: fixed }

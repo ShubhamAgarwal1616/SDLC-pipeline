@@ -1,0 +1,12 @@
+# Planted bug: `used <= limit` lets a client make limit+1 requests (violates "Limit reached").
+prompt: "/sdlc-code-reviewer Review the change for EVAL-1 (Fixed window rate limiter) against its approved spec in /workspace/openspec/changes/add-limit/. The diff is in /io/in/inputs/diff.patch. Follow the stage contract and write /io/out/review.json."
+contract: review.md
+workspace: workspace
+workspace_readonly: true
+inputs: {diff.patch: diff.patch, ticket.json: ticket.json, verify.json: verify.json}
+expected_outputs: [review.json]
+max_turns: 12
+budget_usd: 0.5
+checks:
+  - json: {path: review.json, expr: "data['verdict'] == 'changes_required'"}
+  - json: {path: review.json, expr: "any(f['severity'] in ('blocker', 'major') and ('<=' in str(f) or 'off-by-one' in str(f).lower() or '101' in str(f) or 'limit + 1' in str(f).lower() or 'limit+1' in str(f).lower()) for f in data['findings'])"}

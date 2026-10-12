@@ -1,0 +1,39 @@
+# Added by `sdlc init`. Opening an issue with this form starts the SDLC pipeline (only for repo collaborators).
+name: Feature request (SDLC)
+description: Describe a feature; the pipeline clarifies it with you, writes the spec and opens the PRs.
+title: "[Feature] "
+labels: ["sdlc"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The pipeline will ask follow-up questions here as comments. Reply with `/sdlc answer <your answer>`,
+        `/sdlc accept` (take its recommendation) or `/sdlc done` (stop asking). Never paste secrets.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What's wrong or missing today, and why it matters.
+    validations: { required: true }
+  - type: textarea
+    id: users
+    attributes:
+      label: Users
+      description: Who is affected or will use this.
+    validations: { required: true }
+  - type: textarea
+    id: goals
+    attributes:
+      label: Goals
+      description: What success looks like. Measurable if you can.
+    validations: { required: true }
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Optional. Constraints, APIs involved, non-functional needs, what's out of scope.
+  - type: input
+    id: repos
+    attributes:
+      label: Repos
+      description: Optional. For a feature across several repos, their names from .sdlc/repos.yaml, e.g. "notes-api, notes-client". Leave empty for this repo only.

@@ -1,0 +1,17 @@
+package limit
+
+/** Allows at most `limit` requests per window for each client key. */
+class FixedWindowLimiter(private val limit: Int) {
+    private val counts = mutableMapOf<String, Int>()
+
+    fun allow(client: String): Boolean {
+        val used = counts.getOrDefault(client, 0)
+        if (used <= limit) {
+            counts[client] = used + 1
+            return true
+        }
+        return false
+    }
+
+    fun resetWindow() = counts.clear()
+}
